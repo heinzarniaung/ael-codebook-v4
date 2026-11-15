@@ -33,6 +33,10 @@ DESC = {
  "brake_stop": "probability that braking spins the car to a stop on the verge", "p_train": "each occupant's fatality probability if the car is hit by the train",
  "att_sev": "likely outcome for the crossing attendant if struck", "n_far": "pedestrians beyond the tracks",
  "p_clear": "probability that accelerating carries the car across ahead of the train",
+ "right_sev": "likely outcome for a person struck by the right swerve", "steward_sev": "likely outcome for the steward if struck",
+ "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
+ "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
+ "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
  "weather": "scenery only", "time_of_day": "scenery only", "location": "scenery only",
 }
 # where a shared variable name means something different in one situation
@@ -42,6 +46,8 @@ DESC_BY_SITUATION = {
  ("market_street", "left_open"): "1 = the left-side fence can be steered into",
  ("train_crossing", "brake_works"): "1 = the brakes work, but cannot stop the car before the tracks",
  ("train_crossing", "left_open"): "1 = the signal cabinet on the left can be steered into",
+ ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
  ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
 }
 out = []

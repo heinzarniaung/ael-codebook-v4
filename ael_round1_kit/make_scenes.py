@@ -1,4 +1,4 @@
-"""Writes the 36 scene files (12 situations x high/mid/low) from one definition per situation."""
+"""Writes the 45 scene files (15 situations x high/mid/low) from one definition per situation."""
 import copy
 import os
 import yaml
@@ -591,6 +591,151 @@ SITUATIONS.append({
     },
     "order": ["weather", "time_of_day", "location", "group:occupants", "group:attendant", "group:far",
               "brake_works", "left_open", "means", "consent"],
+})
+
+# ================================================================ 13. mirror swerves
+SITUATIONS.append({
+    "situation": "mirror_swerve", "owner": "zarni",
+    "title": "Two identical swerves, each stopping the car by striking one person; only who stands on each side differs",
+    "alpha": {"means": [1, 0], "consent": [0, 1]},
+    "harm": [("n_ahead", [3, 1, 5]), ("p_hit", [0.9, 0.5]), ("brake_gain", [1.0, 0.5]),
+             ("left_sev", ["fatal", "serious"]), ("right_sev", ["fatal", "serious"]),
+             ("brake_works", [1, 0]), ("occupants", [1, 2, 3])],
+    "gamma_types": [("ahead_type", ["adult", "child", "elderly"]), ("left_type", ["child", "elderly"]),
+                    ("right_type", ["elderly", "child"])],
+    "mid_gamma_type": "left_type",
+    "groups": {
+        "ahead": {"count": "n_ahead", "type": "ahead_type", "noun_one": "pedestrian ahead", "noun_many": "pedestrians ahead", "consent": "0",
+                  "one": "One {type} pedestrian is crossing the street directly ahead of the car.",
+                  "many": "{n} {type} pedestrians are crossing the street directly ahead of the car."},
+        "left": {"count": "1", "type": "left_type", "noun_one": "pedestrian on the left", "noun_many": "", "consent": "consent",
+                 "one": "One {type} pedestrian is standing at the edge of the road on the left.", "many": ""},
+        "right": {"count": "1", "type": "right_type", "noun_one": "pedestrian on the right", "noun_many": "", "consent": "consent",
+                  "one": "One {type} pedestrian is standing at the edge of the road on the right.", "many": ""},
+        "occupants": {"count": "occupants", "type_text": "adult", "noun_one": "occupant of this car", "noun_many": "occupants of this car", "consent": "0",
+                      "one": "There is one adult occupant in the car.", "many": "There are {n} adult occupants in the car."},
+    },
+    "feasible": {"brake": "brake_works == 1"},
+    "outcomes": {
+        "ahead": {"maintain": {"fatal": "p_hit", "serious": "1 - p_hit"},
+                  "brake": {"fatal": "p_hit * brake_gain", "serious": "min(1 - p_hit * brake_gain, 0.5)"},
+                  "accelerate": {"fatal": "min(1, p_hit + 0.05)", "serious": "max(0, 0.95 - p_hit)"}},
+        "left": {"swerve_left": {"fatal": "0.7 if left_sev == 'fatal' else 0.05",
+                                 "serious": "0.3 if left_sev == 'fatal' else 0.85"}},
+        "right": {"swerve_right": {"fatal": "0.7 if right_sev == 'fatal' else 0.05",
+                                   "serious": "0.3 if right_sev == 'fatal' else 0.85"}},
+        "occupants": {"swerve_left": {"minor": "0.3"}, "swerve_right": {"minor": "0.3"}},
+    },
+    "means_test": {"swerve_left": {"left": "means == 1", "occupants": "False"},
+                   "swerve_right": {"right": "means == 1", "occupants": "False"},
+                   "accelerate": {"ahead": "False"}},
+    "facts": {
+        "location": {"suburban street": "The car is on a narrow suburban street, approaching a crossing.",
+                     "downtown street": "The car is on a narrow downtown street, approaching a crossing."},
+        "brake_works": {1: "The car's brakes are working, but the car is already close to the crossing, so braking may not slow it in time.", 0: "The car's brakes have failed; braking is not possible."},
+        "means": {1: "Swerving either way avoids the pedestrians ahead only because the impact with the person standing on that side stops the car; if no one were standing there, the car would continue into the pedestrians ahead.",
+                  0: "Swerving either way steers the car clear of the pedestrians ahead; the person standing on that side is simply in the car's new path."},
+        "consent": {0: "Neither of the two people at the edges of the road has agreed to anything.",
+                    1: "Both people at the edges of the road have given documented, prior consent to being struck by the car in exactly this situation."},
+    },
+    "order": ["weather", "time_of_day", "location", "group:ahead", "group:left", "group:right",
+              "group:occupants", "brake_works", "means", "consent"],
+})
+
+# ================================================================ 14. one person or two
+SITUATIONS.append({
+    "situation": "steward_or_pair", "owner": "zarni",
+    "title": "Two swerves that each stop the car by striking someone: one steward on the left, two people on the right",
+    "alpha": {"means": [1, 0], "consent": [0, 1]},
+    "harm": [("n_platform", [4, 1, 6]), ("p_hit", [0.9, 0.5]), ("brake_gain", [0.5, 1.0]),
+             ("steward_sev", ["fatal", "serious"]), ("pair_sev", ["serious", "fatal"]),
+             ("pair_count", [2, 3]), ("occupants", [1, 2, 3])],
+    "gamma_types": [("platform_type", ["adult", "child", "elderly"]), ("steward_type", ["adult", "elderly"]),
+                    ("pair_type", ["adult", "elderly"])],
+    "mid_gamma_type": "steward_type",
+    "groups": {
+        "platform": {"count": "n_platform", "type": "platform_type", "noun_one": "person crossing to the tram platform", "noun_many": "people crossing to the tram platform", "consent": "0",
+                     "one": "One {type} person is crossing the road to a tram platform directly ahead of the car.",
+                     "many": "{n} {type} people are crossing the road to a tram platform directly ahead of the car."},
+        "steward": {"count": "1", "type": "steward_type", "noun_one": "steward on the left", "noun_many": "", "consent": "consent",
+                    "one": "One {type} event steward is standing at the edge of the road on the left.", "many": ""},
+        "pair": {"count": "pair_count", "type": "pair_type", "noun_one": "person on the right", "noun_many": "people on the right", "consent": "0",
+                 "one": "", "many": "{n} {type} people are standing together at the edge of the road on the right."},
+        "occupants": {"count": "occupants", "type_text": "adult", "noun_one": "occupant of this car", "noun_many": "occupants of this car", "consent": "0",
+                      "one": "There is one adult occupant in the car.", "many": "There are {n} adult occupants in the car."},
+    },
+    "feasible": {},
+    "outcomes": {
+        "platform": {"maintain": {"fatal": "p_hit", "serious": "1 - p_hit"},
+                     "brake": {"fatal": "p_hit * brake_gain", "serious": "min(1 - p_hit * brake_gain, 0.5)"},
+                     "accelerate": {"fatal": "min(1, p_hit + 0.05)", "serious": "max(0, 0.95 - p_hit)"}},
+        "steward": {"swerve_left": {"fatal": "0.7 if steward_sev == 'fatal' else 0.05",
+                                    "serious": "0.3 if steward_sev == 'fatal' else 0.85"}},
+        "pair": {"swerve_right": {"fatal": "0.1 if pair_sev == 'serious' else 0.7",
+                                  "serious": "0.8 if pair_sev == 'serious' else 0.3"}},
+        "occupants": {"swerve_left": {"minor": "0.3"}, "swerve_right": {"minor": "0.3"}},
+    },
+    "means_test": {"swerve_left": {"steward": "means == 1", "occupants": "False"},
+                   "swerve_right": {"pair": "means == 1", "occupants": "False"},
+                   "accelerate": {"platform": "False"}},
+    "facts": {
+        "location": {"suburban street": "The car is approaching a tram stop on a suburban street.",
+                     "downtown street": "The car is approaching a tram stop on a downtown street."},
+        "means": {1: "Swerving left avoids the crossing only because the impact with the steward stops the car, and swerving right avoids it only because the impact with the people on the right stops the car; with no one standing on that side, the car would continue into the crossing.",
+                  0: "Swerving left or right steers the car clear of the crossing; the steward and the people on the right are simply standing in the car's new path."},
+        "consent": {0: "No one at either edge of the road has agreed to anything.",
+                    1: "The steward has given documented, prior consent to being struck by the car in exactly this situation; the people on the right have not agreed to anything."},
+    },
+    "order": ["weather", "time_of_day", "location", "group:platform", "group:steward", "group:pair",
+              "group:occupants", "means", "consent"],
+})
+
+# ================================================================ 15. crossing against the signal
+SITUATIONS.append({
+    "situation": "signal_crossing", "owner": "zarni",
+    "title": "Pedestrians crossing with or against the signal; a stopping swerve strikes a person on the corner",
+    "alpha": {"means": [1, 0], "consent": [0, 1]},
+    "harm": [("n_ahead", [3, 1, 5]), ("p_hit", [0.9, 0.5]), ("brake_gain", [1.0, 0.5]),
+             ("corner_sev", ["fatal", "serious"]), ("right_open", [0, 1]),
+             ("brake_works", [1, 0]), ("occupants", [1, 2, 3])],
+    "gamma_types": [("ahead_type", ["adult", "child", "elderly"]), ("signal_type", ["against", "with"]),
+                    ("corner_type", ["adult", "elderly"])],
+    "mid_gamma_type": "signal_type",
+    "groups": {
+        "ahead": {"count": "n_ahead", "type": "ahead_type", "noun_one": "pedestrian in the crossing", "noun_many": "pedestrians in the crossing", "consent": "0",
+                  "one": "One {type} pedestrian is in the crossing directly ahead of the car.",
+                  "many": "{n} {type} pedestrians are in the crossing directly ahead of the car."},
+        "corner": {"count": "1", "type": "corner_type", "noun_one": "pedestrian on the corner", "noun_many": "", "consent": "consent",
+                   "one": "One {type} pedestrian is standing on the corner to the left, out of the crossing.", "many": ""},
+        "occupants": {"count": "occupants", "type_text": "adult", "noun_one": "occupant of this car", "noun_many": "occupants of this car", "consent": "0",
+                      "one": "There is one adult occupant in the car.", "many": "There are {n} adult occupants in the car."},
+    },
+    "feasible": {"brake": "brake_works == 1", "swerve_right": "right_open == 1"},
+    "outcomes": {
+        "ahead": {"maintain": {"fatal": "p_hit", "serious": "1 - p_hit"},
+                  "brake": {"fatal": "p_hit * brake_gain", "serious": "min(1 - p_hit * brake_gain, 0.5)"},
+                  "accelerate": {"fatal": "min(1, p_hit + 0.05)", "serious": "max(0, 0.95 - p_hit)"}},
+        "corner": {"swerve_left": {"fatal": "0.7 if corner_sev == 'fatal' else 0.05",
+                                   "serious": "0.3 if corner_sev == 'fatal' else 0.85"}},
+        "occupants": {"swerve_left": {"minor": "0.3"}, "swerve_right": {"fatal": "0.5", "serious": "0.5"}},
+    },
+    "means_test": {"swerve_left": {"corner": "means == 1", "occupants": "False"},
+                   "swerve_right": {"occupants": "False"}, "accelerate": {"ahead": "False"}},
+    "facts": {
+        "location": {"suburban street": "The car is approaching a signal-controlled crossing on a suburban street.",
+                     "downtown street": "The car is approaching a signal-controlled crossing on a downtown street."},
+        "signal_type": {"against": "The crossing signal shows 'Don't Walk', so anyone in the crossing is crossing against the signal.",
+                        "with": "The crossing signal shows 'Walk', so anyone in the crossing is crossing legally."},
+        "brake_works": {1: "The car's brakes are working, but the car is already close to the crossing, so braking may not slow it in time.", 0: "The car's brakes have failed; braking is not possible."},
+        "right_open": {1: "A concrete barrier on the right can be steered into.",
+                       0: "The right side is blocked; the car cannot swerve right."},
+        "means": {1: "Swerving left avoids the crossing only because the impact with the pedestrian on the corner stops the car; if no one were standing there, the car would continue into the crossing.",
+                  0: "Swerving left steers the car clear of the crossing; the pedestrian on the corner is simply standing in the car's new path."},
+        "consent": {0: "The pedestrian on the corner has not agreed to anything.",
+                    1: "The pedestrian on the corner has given documented, prior consent to being struck by the car in exactly this situation."},
+    },
+    "order": ["weather", "time_of_day", "location", "signal_type", "group:ahead", "group:corner", "group:occupants",
+              "brake_works", "right_open", "means", "consent"],
 })
 
 
