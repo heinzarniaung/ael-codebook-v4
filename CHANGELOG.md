@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-11-16: situations in their own files, and rounds (khai)
+
+No scenario changes: all 57 scene files and every per-scene output are byte for byte the same as before, and each
+round's `scenarios.json` is exactly its situations' slice of the previous single file.
+
+- **Rounds.** "Round 1" had grown from the 6 reviewed situations to every situation written since. It is now the
+  6 situations reviewed together (228 scenarios); the other 13 are **Round 2** (494 scenarios, not yet reviewed).
+  `rounds/<round>.yaml` lists each round's situations, and each round builds to `build/<round>/`.
+- **One file per situation** in `situations/`, instead of one 980-line `make_scenes.py` that everyone edited
+  (its comments had numbered situations 13, 13, 14, 14, 15, 13, 14). Shared sentences are in `situations/_shared.py`.
+- **Merged Auden's `auden-new-situations` branch** (`lane_edge`, `two_means`; now in Round 2). `make_catalog.py`
+  crashed on its new variables; descriptions added.
+- **Layout.** The `ael_round1_kit/` folder is gone: tools are in `tools/`, review sheets in `reviews/round1/`.
+- **One command**: `python tools/build.py <round>` builds and runs every check, including
+  `check_independent.py`, which no README mentioned. Its expected counts were hard-coded for 6 situations; they now
+  scale with the number of situations.
+- `reviews.py` and `make_catalog.py` take the round (`python tools/reviews.py round2 new ...`).
+- The case-code seed prefix is now a named constant (`CODE_SEED` in `reference_pipeline.py`), still `"ael-round1-"`
+  so that no case code changes.
+- CI builds each round on Linux and Windows. Round 1 passes everything; Round 2 fails on 5 duplicate case codes.
+
 ## 2026-11-16: cleanup, no change to scenarios (khai)
 
 The build output (`scenes/` and `expected/`) is byte for byte the same as before.

@@ -1,7 +1,14 @@
-"""Writes catalog.md from the situation definitions and the expected outputs."""
-import json, sys
-sys.path.insert(0, ".")
+"""Writes build/<round>/catalog.md from the situation definitions and the round's build.
+
+Usage:  python tools/make_catalog.py <round>
+"""
+import json, os, sys
 import make_scenes as M
+import rounds
+if len(sys.argv) != 2:
+    sys.exit(__doc__)
+ROUND = sys.argv[1]
+EXPECTED = rounds.build_dir(ROUND, "expected")
 DESC = {
  "means": "Kantian. 1 = harming this group is how the action works (means test: yes); 0 = they are only in the car's new path",
  "consent": "Kantian. 1 = that group gave documented prior consent",
@@ -55,12 +62,12 @@ DESC_BY_SITUATION = {
  ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []
-for s in M.SITUATIONS:
+for s in rounds.situations_of(ROUND):
     files = M.scene_files(s)
     hi, mid, lo = (files[f"{s['situation']}_{l}"] for l in ("high", "mid", "low"))
     types = {g["type"]: g["noun_many"] for g in s["groups"].values() if g.get("type")}
-    lab = json.loads(open(f"expected/{s['situation']}_high/labels.jsonl").readline())
-    narr = json.loads(open(f"expected/{s['situation']}_high/narratives.jsonl").readline())["narrative"]
+    lab = json.loads(open(os.path.join(EXPECTED, f"{s['situation']}_high", "labels.jsonl")).readline())
+    narr = json.loads(open(os.path.join(EXPECTED, f"{s['situation']}_high", "narratives.jsonl")).readline())["narrative"]
     out.append(f"## {s['situation']}\n\n**{s['title']}.** Reviewer: {s['owner'].capitalize()}. Anchor labels: U = {lab['U']}, K = {lab['K']}.\n")
     out.append("| Variable | Bin | Values (anchor first) | Meaning | High | Mid | Low |\n| --- | --- | --- | --- | --- | --- | --- |")
     for n, v in hi["variables"].items():
@@ -68,5 +75,5 @@ for s in M.SITUATIONS:
         mark = lambda f: "varies" if n in f["variables"] else "fixed"
         out.append(f"| `{n}` | {v['bin']} | {', '.join(str(x) for x in v['values'])} | {meaning} | varies | {mark(mid)} | {mark(lo)} |")
     out.append("\nAnchor narrative (the exact text a model receives for S00, at every level):\n\n```text\n" + narr + "\n```\n")
-open("catalog.md", "w").write("\n".join(out))
-print("ok")
+open(rounds.build_dir(ROUND, "catalog.md"), "w").write("\n".join(out))
+print("wrote", rounds.build_dir(ROUND, "catalog.md"))

@@ -1,6 +1,6 @@
 """Reference implementation of the scenario pipeline (expand -> build -> label -> narrate -> packets).
 
-Usage:  python reference_pipeline.py scenes/<scene>.yaml [more scenes ...] --out expected
+Usage:  python tools/reference_pipeline.py build/<round>/scenes/*.yaml --out build/<round>/expected
 Writes, per scene, into <out>/<scene_id>/:
   scenarios.jsonl   one line per scenario: id, changed_variable, all variable values
   records.json      v4 scenario records (input to labeler.py)
@@ -20,7 +20,7 @@ import sys
 
 import yaml
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "codebook"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "codebook"))
 import labeler as L  # noqa: E402
 
 ACTIONS = L.ACTIONS
@@ -204,12 +204,17 @@ def diff_check(anchor_parts, twin_parts, changed):
 
 
 # ---------------------------------------------------------------- main
+# Case codes are drawn from a generator seeded with this prefix plus the scene id. Keep it fixed:
+# changing it changes every case code, and review sheets refer to scenarios by case code.
+CODE_SEED = "ael-round1-"
+
+
 def run(path, out_root):
     scene = yaml.safe_load(open(path))
     out = os.path.join(out_root, scene["scene_id"])
     os.makedirs(os.path.join(out, "packets"), exist_ok=True)
     rows = expand(scene)
-    rng = random.Random(f"ael-round1-{scene['scene_id']}")
+    rng = random.Random(f"{CODE_SEED}{scene['scene_id']}")
     alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
     codes, used = [], set()
     while len(codes) < len(rows):
