@@ -1,0 +1,13 @@
+case,scenario_id,changed_variable
+B3B,tailgating_bus_mid-S00,none
+HRT,tailgating_bus_mid-S01,means: 1 -> 0
+SEP,tailgating_bus_mid-S02,consent: 0 -> 1
+D7J,tailgating_bus_mid-S03,bus_count: 4 -> 1
+R8R,tailgating_bus_mid-S04,bus_count: 4 -> 10
+MZ3,tailgating_bus_mid-S05,p_hit: 0.3 -> 0.5
+9T6,tailgating_bus_mid-S06,brake_gain: 0.5 -> 0.2
+6VZ,tailgating_bus_mid-S07,verge_sev: serious -> fatal
+U52,tailgating_bus_mid-S08,n_ahead: 1 -> 2
+U8S,tailgating_bus_mid-S09,bus_type: adult -> elderly
+J3E,tailgating_bus_mid-S10,time_of_day: day -> night
+DCK,tailgating_bus_mid-S11,location: suburban street -> downtown street

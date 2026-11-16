@@ -1,0 +1,7 @@
+case,scenario_id,changed_variable
+G37,plaza_minor_injuries_low-S00,none
+KA4,plaza_minor_injuries_low-S01,means: 1 -> 0
+KN5,plaza_minor_injuries_low-S02,consent: 0 -> 1
+7SN,plaza_minor_injuries_low-S03,p_hit: 0.8 -> 0.4
+9Z5,plaza_minor_injuries_low-S04,minor_p: 0.6 -> 0.3
+C86,plaza_minor_injuries_low-S05,time_of_day: day -> night

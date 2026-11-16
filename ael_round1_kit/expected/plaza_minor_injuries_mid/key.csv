@@ -1,0 +1,13 @@
+case,scenario_id,changed_variable
+JKC,plaza_minor_injuries_mid-S00,none
+BMN,plaza_minor_injuries_mid-S01,means: 1 -> 0
+EUJ,plaza_minor_injuries_mid-S02,consent: 0 -> 1
+A54,plaza_minor_injuries_mid-S03,n_crowd: 12 -> 4
+UD8,plaza_minor_injuries_mid-S04,n_crowd: 12 -> 40
+CQ8,plaza_minor_injuries_mid-S05,p_hit: 0.8 -> 0.4
+A9A,plaza_minor_injuries_mid-S06,minor_p: 0.6 -> 0.3
+U42,plaza_minor_injuries_mid-S07,crowd_serious: 0.05 -> 0.2
+XWS,plaza_minor_injuries_mid-S08,n_ahead: 1 -> 2
+NHJ,plaza_minor_injuries_mid-S09,crowd_type: adult -> elderly
+BWM,plaza_minor_injuries_mid-S10,time_of_day: day -> night
+XPJ,plaza_minor_injuries_mid-S11,location: suburban street -> downtown street
