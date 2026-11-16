@@ -4,7 +4,7 @@ base = sys.argv[1] if len(sys.argv) > 1 else "expected"
 LEVEL_N = {"low": 6, "mid": 12, "high": 20}
 ok = True; codes = collections.Counter(); rows_out = []
 for d in sorted(glob.glob(base + "/*/")):
-    sid = os.path.basename(d.rstrip("/")); level = sid.rsplit("_", 1)[1]
+    sid = os.path.basename(os.path.normpath(d)); level = sid.rsplit("_", 1)[1]
     labs = [json.loads(l) for l in open(d + "labels.jsonl")]
     sc = [json.loads(l) for l in open(d + "scenarios.jsonl")]
     key = list(csv.DictReader(open(d + "key.csv")))
