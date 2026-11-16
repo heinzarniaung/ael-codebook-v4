@@ -20,7 +20,35 @@ DESC = {
  "worker_count": "road workers in the left lane", "n_crowd": "people in the crosswalk",
  "p_crowd": "each one's fatality probability if the truck is not blocked", "block_success": "probability the block stops the truck",
  "occ_sev": "likely outcome for this car's occupants if they block the truck", "driver_risk": "1 = the truck has a driver (seriously injured by the block)",
+ "bus_count": "passengers on the bus following the car (harmed if the car brakes)",
+ "verge_sev": "likely outcome for the pedestrian on the verge if the car swerves right",
+ "left_open": "1 = the left median can be steered onto",
+ "minor_p": "each plaza person's probability of minor injury if the car swerves onto the plaza",
+ "crowd_serious": "each plaza person's probability of serious injury if the car swerves onto the plaza",
+ "n_crew": "road workers in the work zone ahead", "truck_sev": "likely outcome for the truck driver if the car swerves left",
+ "motorist_sev": "likely outcome for a struck motorist in the right emergency lane", "motorist_count": "motorists in the right emergency lane",
+ "parked_sev": "likely outcome for people in the struck parked car", "parked_occ": "passengers in the parked car",
+ "p_slide": "each one's fatality probability if the car slides on into the crossing", "grit_sev": "likely outcome for the road worker on the verge if the car brakes",
+ "scaffold_sev": "likely outcome for a scaffold worker if the car accelerates", "scaffold_count": "workers on the scaffold",
+ "brake_stop": "probability that braking spins the car to a stop on the verge", "p_train": "each occupant's fatality probability if the car is hit by the train",
+ "att_sev": "likely outcome for the crossing attendant if struck", "n_far": "pedestrians beyond the tracks",
+ "p_clear": "probability that accelerating carries the car across ahead of the train",
+ "right_sev": "likely outcome for a person struck by the right swerve", "steward_sev": "likely outcome for the steward if struck",
+ "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
+ "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
+ "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
  "weather": "scenery only", "time_of_day": "scenery only", "location": "scenery only",
+}
+# where a shared variable name means something different in one situation
+DESC_BY_SITUATION = {
+ ("plaza_minor_injuries", "n_crowd"): "people on the plaza to the right",
+ ("market_street", "n_crowd"): "shoppers in the street ahead",
+ ("market_street", "left_open"): "1 = the left-side fence can be steered into",
+ ("train_crossing", "brake_works"): "1 = the brakes work, but cannot stop the car before the tracks",
+ ("train_crossing", "left_open"): "1 = the signal cabinet on the left can be steered into",
+ ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
 }
 out = []
 for s in M.SITUATIONS:
@@ -32,7 +60,7 @@ for s in M.SITUATIONS:
     out.append(f"## {s['situation']}\n\n**{s['title']}.** Reviewer: {s['owner'].capitalize()}. Anchor labels: U = {lab['U']}, K = {lab['K']}.\n")
     out.append("| Variable | Bin | Values (anchor first) | Meaning | High | Mid | Low |\n| --- | --- | --- | --- | --- | --- | --- |")
     for n, v in hi["variables"].items():
-        meaning = DESC.get(n) or f"scenery only: how the {types[n]} are described"
+        meaning = DESC_BY_SITUATION.get((s["situation"], n)) or DESC.get(n) or f"scenery only: how the {types[n]} are described"
         mark = lambda f: "varies" if n in f["variables"] else "fixed"
         out.append(f"| `{n}` | {v['bin']} | {', '.join(str(x) for x in v['values'])} | {meaning} | varies | {mark(mid)} | {mark(lo)} |")
     out.append("\nAnchor narrative (the exact text a model receives for S00, at every level):\n\n```text\n" + narr + "\n```\n")
