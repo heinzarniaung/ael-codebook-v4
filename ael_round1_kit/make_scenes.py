@@ -1,4 +1,4 @@
-"""Writes the 45 scene files (15 situations x high/mid/low) from one definition per situation."""
+"""Writes three scene files (high, mid, low) for every situation defined below."""
 import copy
 import os
 import yaml
@@ -884,4 +884,4 @@ if __name__ == "__main__":
         for sid, doc in scene_files(s).items():
             with open(f"scenes/{sid}.yaml", "w") as f:
                 yaml.safe_dump(doc, f, sort_keys=False, allow_unicode=True, width=200)
-    print("wrote", len(os.listdir("scenes")), "scene files")
+    print("wrote", len(os.listdir("scenes")), "scene files for", len(SITUATIONS), "situations")
