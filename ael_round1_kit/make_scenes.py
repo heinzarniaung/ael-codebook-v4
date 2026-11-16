@@ -738,7 +738,7 @@ SITUATIONS.append({
               "brake_works", "right_open", "means", "consent"],
 })
 
-# ================================================================ 13. toll booth with death tie for anchor attendant_p = worker_p = 0.5
+# ================================================================ 16. toll booth with death tie for anchor attendant_p = worker_p = 0.5
 SITUATIONS.append({
     "situation": "toll_booth_tie", "owner": "victoria",
     "title": "Two swerves with the same expected deaths for anchor at a toll booth. Left swerve uses the attendant to stop the car",
@@ -788,7 +788,7 @@ SITUATIONS.append({
               "group:occupants", "means", "consent"],
 })
 
-# ================================================================ 14. car wash with death tie for anchor attendant_p = worker_p = 0.5
+# ================================================================ 17. car wash with death tie for anchor attendant_p = worker_p = 0.5
 SITUATIONS.append({
     "situation": "car_wash_tie", "owner": "victoria",
     "title":"Two swerves with the same risk per person for anchor at a car wash; the left one uses the attendant to stop the car",
