@@ -19,7 +19,12 @@ round's `scenarios.json` is exactly its situations' slice of the previous single
 - `reviews.py` and `make_catalog.py` take the round (`python tools/reviews.py round2 new ...`).
 - The case-code seed prefix is now a named constant (`CODE_SEED` in `reference_pipeline.py`), still `"ael-round1-"`
   so that no case code changes.
-- CI builds each round on Linux and Windows. Round 1 passes everything; Round 2 fails on 5 duplicate case codes.
+- CI builds each round on Linux and Windows.
+- **Duplicate case codes fixed.** Codes are now unique across a whole build, not only within a scene: a code an
+  earlier scene (in file-name order) already used is redrawn, and every other code stays as it was. Round 1 is
+  unchanged. In Round 2, five scenarios get new codes (only their `key.csv` row and packet file name change):
+  `lane_edge_mid` FQU, `market_street_high` X8K, `signal_crossing_high` CRN, `train_crossing_high` UJF,
+  `work_zone_barrier_low` 8TA. Both rounds now pass every check.
 
 ## 2026-11-16: cleanup, no change to scenarios (khai)
 

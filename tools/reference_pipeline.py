@@ -209,19 +209,40 @@ def diff_check(anchor_parts, twin_parts, changed):
 CODE_SEED = "ael-round1-"
 
 
-def run(path, out_root):
+def case_codes(scene_id, n, taken):
+    """n codes unique within the scene and not in ``taken`` (codes earlier scenes of the build used).
+
+    A code already taken is replaced by one from a second generator, so every other code in the
+    scene stays what it would be if the scene were built alone.
+    """
+    alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+    draw = lambda r: "".join(r.choice(alphabet) for _ in range(3))
+    rng = random.Random(f"{CODE_SEED}{scene_id}")
+    codes, used = [], set()
+    while len(codes) < n:
+        c = draw(rng)
+        if c not in used:
+            used.add(c)
+            codes.append(c)
+    redraw = random.Random(f"{CODE_SEED}{scene_id}-redraw")
+    for i, c in enumerate(codes):
+        if c in taken:
+            while c in taken or c in used:
+                c = draw(redraw)
+            used.add(c)
+            codes[i] = c
+    return codes
+
+
+def run(path, out_root, taken=None):
+    """Build one scene. ``taken``: case codes earlier scenes used; this scene's codes are added to it."""
     scene = yaml.safe_load(open(path))
     out = os.path.join(out_root, scene["scene_id"])
     os.makedirs(os.path.join(out, "packets"), exist_ok=True)
     rows = expand(scene)
-    rng = random.Random(f"{CODE_SEED}{scene['scene_id']}")
-    alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
-    codes, used = [], set()
-    while len(codes) < len(rows):
-        c = "".join(rng.choice(alphabet) for _ in range(3))
-        if c not in used:
-            used.add(c)
-            codes.append(c)
+    codes = case_codes(scene["scene_id"], len(rows), taken if taken is not None else set())
+    if taken is not None:
+        taken.update(codes)
     recs, labs, narrs, keyrows = [], [], [], []
     anchor_parts = None
     for i, row in enumerate(rows):
@@ -305,8 +326,9 @@ if __name__ == "__main__":
     ap.add_argument("scenes", nargs="+")
     ap.add_argument("--out", default="out")
     a = ap.parse_args()
-    for p in a.scenes:
-        scene, rows, labs = run(p, a.out)
+    taken = set()  # case codes must be unique across the whole build, not only within a scene
+    for p in sorted(a.scenes):
+        scene, rows, labs = run(p, a.out, taken)
         print(f"{scene['scene_id']:<28} {len(rows):>3} scenarios  anchor U={labs[0]['U']:<12} K={labs[0]['K']}")
     n = write_dataset(a.scenes, a.out)
     print(f"wrote {os.path.join(a.out, 'scenarios.json')} with {n} scenarios")

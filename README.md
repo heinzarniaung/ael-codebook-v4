@@ -71,7 +71,5 @@ The per-scene output folders also contain `packets/` and `key.csv`, prompt files
 
 ## Known issues
 
-- Round 2 has **5 duplicate case codes** (`FQU`, `CRN`, `X8K`, `UJF`, `8TA`), so its build fails `verify_round.py`.
-  Each scene draws codes from its own seed, so codes can repeat across scenes. Round 1 has none.
 - Line numbers in `reviews/round1/failed_items.yaml` (`make_scenes.py:63` and so on) refer to the old single
   `ael_round1_kit/make_scenes.py`, as of commit `15fcb0c`.
