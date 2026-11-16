@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-11-16: cleanup, no change to scenarios (khai)
+
+The build output (`scenes/` and `expected/`) is byte for byte the same as before.
+
+- **Counts corrected.** README and `make_scenes.py` said 12 or 15 situations; the code defines **17 situations /
+  51 scenes / 646 scenarios** (adds `mirror_swerve`, `steward_or_pair`, `signal_crossing`, `toll_booth_tie`,
+  `car_wash_tie` to the 12 below). `make_scenes.py` now prints the situation count, so the README can be checked against it.
+- `verify_round.py` crashed on Windows (`IndexError`): `glob` returns backslash paths there. Fixed.
+- The six `car_wash_tie` / `toll_booth_tie` scene files were committed despite `.gitignore`; they are generated
+  (identically) by `make_scenes.py`, so they are no longer tracked.
+- `reviews/zarni.csv.bak` removed (an older draft, still in git history). The Claude-assisted readable scenarios
+  and review sheet moved to `reviews/claude_assisted/`.
+- Top-level README added; GitHub Actions now builds, lints, checks the review sheets and runs `verify_round.py`
+  on Linux and Windows for every push, and fails if generated files are committed.
+- **Still failing:** `verify_round.py` now finds 7 duplicate case codes (was 2): `GKG`, `FQU`, `CRN`, `X8K`, `UJF`,
+  `8TA`, `ANN`. Not fixed here, because fixing it changes some case codes.
+
 ## 2026-11-15: merge of all Round 1 contributions (12 situations)
 
 Merges `main` (Victoria: `work_zone_barrier`, `market_street`), `auden-new-situations` (Auden: `icy_crossing`,
