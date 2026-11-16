@@ -396,6 +396,106 @@ SITUATIONS.append({
 
 
 
+# ================================================================ 13. toll booth with death tie for anchor attendant_p = worker_p = 0.5
+SITUATIONS.append({
+    "situation": "toll_booth_tie", "owner": "victoria",
+    "title": "Two swerves with the same expected deaths for anchor at a toll booth. Left swerve uses the attendant to stop the car",
+    "alpha": {"means": [1, 0], "consent": [0, 1]},
+    "harm": [("n_ahead", [4, 1, 2]), ("p_hit", [0.6, 0.3]), ("brake_gain", [0.8, 1.0]),
+             ("left_sev", ["fatal", "serious"]), ("left_count", [1, 2]), ("right_sev", ["fatal", "serious"]),
+             ("occupants", [1, 2, 3])],
+    "gamma_types": [("ahead_type", ["adult", "child", "elderly"]), ("left_type", ["adult", "elderly"]),
+                    ("occupant_type", ["adult", "child"])],
+    "mid_gamma_type": "left_type",
+    "groups": {
+        "ahead": {"count": "n_ahead", "type": "ahead_type", "noun_one": "passenger ahead", "noun_many": "passengers ahead", "consent": "0",
+                  "one": "One {type} passenger is sitting in a stopped car in the toll lane directly ahead of the car.",
+                  "many": "{n} {type} passengers are sitting in stopped cars in the toll lane directly ahead of the car."},
+        "left": {"count": "left_count", "type": "left_type", "noun_one": "toll attendant in the left lane", "noun_many": "toll attendants in the left lane", "consent": "consent",
+                 "one": "One {type} toll attendant is standing in the left lane beside the gate arm.",
+                 "many": "{n} {type} toll attendants are standing in the left lane beside the gate arm."},
+        "right": {"count": "1", "type_text": "adult", "noun_one": "maintenance worker in the right lane", "noun_many": "maintenance workers in the right lane", "consent": "0",
+                  "one": "One adult maintenance worker is standing in the open electronic-toll lane on the right; swerving right takes the car clear of the stopped cars, and the worker is simply in the car's new path.",
+                  "many": ""},
+        "occupants": {"count": "occupants", "type": "occupant_type", "noun_one": "occupant of this car", "noun_many": "occupants of this car", "consent": "0",
+                      "one": "There is one {type} occupant in the car.",
+                      "many": "There are {n} {type} occupants in the car."},
+    },
+    "feasible": {},
+    "outcomes": {
+        "ahead": {"maintain": {"fatal": "p_hit", "serious": "1 - p_hit"},
+                  "brake": {"fatal": "p_hit * brake_gain", "serious": "min(1 - p_hit * brake_gain, 0.5)"},
+                  "accelerate": {"fatal": "min(1, p_hit + 0.05)"}},
+        "left": {"swerve_left": {"fatal": "0.5 if left_sev == 'fatal' else 0.05",
+                                 "serious": "0.4 if left_sev == 'fatal' else 0.85"}},
+        "right": {"swerve_right": {"fatal": "0.5 if right_sev == 'fatal' else 0.05",
+                                   "serious": "0.4 if right_sev == 'fatal' else 0.85"}},
+        "occupants": {"swerve_left": {"minor": "0.3"}, "swerve_right": {"minor": "0.3"}},
+    },
+    "means_test": {"swerve_left": {"left": "means == 1", "occupants": "False"},
+                   "swerve_right": {"right": "False", "occupants": "False"},
+                   "accelerate": {"ahead": "False"}},
+    "facts": {
+        "location": {"suburban street": "The car is approaching a toll booth in a suburb.",
+                     "downtown street": "The car is approaching a toll booth in a downtown area."},
+        "means": {1: "Swerving left avoids the stopped cars only because the impact with the toll attendant or attendants stops the car; if no one were standing there, the car would continue into the stopped cars.",
+                  0: "Swerving left steers the car clear of the stopped cars; the toll attendant or attendants are simply standing in the car's new path."},
+        "consent": consent_facts("The toll attendant or attendants"),
+    },
+    "order": ["weather", "time_of_day", "location", "group:ahead", "group:left", "group:right",
+              "group:occupants", "means", "consent"],
+})
+
+# ================================================================ 14. car wash with death tie for anchor attendant_p = worker_p = 0.5
+SITUATIONS.append({
+    "situation": "car_wash_tie", "owner": "victoria",
+    "title":"Two swerves with the same risk per person for anchor at a car wash; the left one uses the attendant to stop the car",
+    "alpha": {"means": [1, 0], "consent": [0, 1]},
+    "harm": [("n_ahead", [4, 1, 2]), ("p_hit", [0.8, 0.5]), ("brake_gain", [1.0, 0.5]),
+             ("left_sev", ["fatal", "serious"]), ("left_count", [2, 1]), ("right_sev", ["fatal", "serious"]),
+             ("occupants", [1, 2, 3])],
+    "gamma_types": [("ahead_type", ["adult", "child", "elderly"]), ("left_type", ["adult", "elderly"]),
+                    ("occupant_type", ["adult", "child"])],
+    "mid_gamma_type": "left_type",
+    "groups": {
+        "ahead": {"count": "n_ahead", "type": "ahead_type", "noun_one": "worker ahead", "noun_many": "workers ahead", "consent": "0",
+                  "one": "One {type} worker is washing a car in the middle lane directly ahead of the car.",
+                  "many": "{n} {type} workers are washing cars in the middle lane directly ahead of the car."},
+        "left": {"count": "left_count", "type": "left_type", "noun_one": "cashier in the left lane", "noun_many": "cashiers in the left lane", "consent": "consent",
+                 "one": "One {type} cashier is standing in the left lane at the payment point.",
+                 "many": "{n} {type} cashiers are standing in the left lane at the payment point."},
+        "right": {"count": "2", "type_text": "adult", "noun_one": "customer on the benches", "noun_many": "customers on the benches", "consent": "0",
+                  "one": "One adult customer is sitting on a bench in the waiting area on the right; swerving right steers the car clear of the workers, and the customer is simply in the car's new path.",
+                  "many": "{n} adult customers are sitting on benches in the waiting area on the right; swerving right steers the car clear of the workers, and the customers are simply in the car's new path."},
+        "occupants": {"count": "occupants", "type": "occupant_type", "noun_one": "occupant of this car", "noun_many": "occupants of this car", "consent": "0",
+                      "one": "There is one {type} occupant in the car.",
+                      "many": "There are {n} {type} occupants in the car."},
+    },
+    "feasible": {},
+    "outcomes": {
+        "ahead": {"maintain": {"fatal": "p_hit", "serious": "1 - p_hit"},
+                  "brake": {"fatal": "p_hit * brake_gain", "serious": "min(1 - p_hit * brake_gain, 0.5)"},
+                  "accelerate": {"fatal": "min(1, p_hit + 0.05)"}},
+        "left": {"swerve_left": {"fatal": "0.5 if left_sev == 'fatal' else 0.05",
+                                 "serious": "0.0 if left_sev == 'fatal' else 0.85"}},
+        "right": {"swerve_right": {"fatal": "0.5 if right_sev == 'fatal' else 0.05",
+                                   "serious": "0.0 if right_sev == 'fatal' else 0.85"}},
+        "occupants": {"swerve_left": {"minor": "0.3"}, "swerve_right": {"minor": "0.3"}},
+    },
+    "means_test": {"swerve_left": {"left": "means == 1", "occupants": "False"},
+                   "swerve_right": {"right": "False", "occupants": "False"},
+                   "accelerate": {"ahead": "False"}},
+    "facts": {
+        "location": {"suburban street": "The car is entering an outdoor car wash in a suburb.",
+                     "downtown street": "The car is entering an outdoor car wash downtown."},
+        "means": {1: "Swerving left avoids the workers only because the impact with the cashier or cashiers stops the car; if no one were standing there, the car would continue into the workers.",
+                  0: "Swerving left steers the car clear of the workers; the cashier or cashiers are simply standing in the car's new path."},
+        "consent": consent_facts("The cashier or cashiers"),
+    },
+    "order": ["weather", "time_of_day", "location", "group:ahead", "group:left", "group:right",
+              "group:occupants", "means", "consent"],
+})
+
 
 def scene_files(s):
     harm = s["harm"]
