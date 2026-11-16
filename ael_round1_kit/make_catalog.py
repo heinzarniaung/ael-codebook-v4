@@ -37,6 +37,9 @@ DESC = {
  "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
  "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
  "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
+ "lead_in_path": "1 = the pedestrian at the left edge is already in the car's path",
+ "lead_sev": "likely outcome for the pedestrian at the left edge if struck",
+ "cyc_sev": "likely outcome for the cyclist if struck",
  "weather": "scenery only", "time_of_day": "scenery only", "location": "scenery only",
 }
 # where a shared variable name means something different in one situation
@@ -49,6 +52,7 @@ DESC_BY_SITUATION = {
  ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
  ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
  ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []
 for s in M.SITUATIONS:
