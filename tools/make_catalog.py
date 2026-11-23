@@ -1,7 +1,14 @@
-"""Writes catalog.md from the situation definitions and the expected outputs."""
-import json, sys
-sys.path.insert(0, ".")
+"""Writes build/<round>/catalog.md from the situation definitions and the round's build.
+
+Usage:  python tools/make_catalog.py <round>
+"""
+import json, os, sys
 import make_scenes as M
+import rounds
+if len(sys.argv) != 2:
+    sys.exit(__doc__)
+ROUND = sys.argv[1]
+EXPECTED = rounds.build_dir(ROUND, "expected")
 DESC = {
  "means": "Kantian. 1 = harming this group is how the action works (means test: yes); 0 = they are only in the car's new path",
  "consent": "Kantian. 1 = that group gave documented prior consent",
@@ -33,10 +40,13 @@ DESC = {
  "brake_stop": "probability that braking spins the car to a stop on the verge", "p_train": "each occupant's fatality probability if the car is hit by the train",
  "att_sev": "likely outcome for the crossing attendant if struck", "n_far": "pedestrians beyond the tracks",
  "p_clear": "probability that accelerating carries the car across ahead of the train",
- "right_sev": "likely outcome for a person struck by the right swerve", "steward_sev": "likely outcome for the steward if struck",
+ "right_sev": "likely outcome for a person struck by the right swerve", "right_count": "people who would be struck by the right swerve", "steward_sev": "likely outcome for the steward if struck",
  "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
  "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
  "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
+ "lead_in_path": "1 = the pedestrian at the left edge is already in the car's path",
+ "lead_sev": "likely outcome for the pedestrian at the left edge if struck",
+ "cyc_sev": "likely outcome for the cyclist if struck",
  "weather": "scenery only", "time_of_day": "scenery only", "location": "scenery only",
 }
 # where a shared variable name means something different in one situation
@@ -49,14 +59,15 @@ DESC_BY_SITUATION = {
  ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
  ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
  ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []
-for s in M.SITUATIONS:
+for s in rounds.situations_of(ROUND):
     files = M.scene_files(s)
     hi, mid, lo = (files[f"{s['situation']}_{l}"] for l in ("high", "mid", "low"))
     types = {g["type"]: g["noun_many"] for g in s["groups"].values() if g.get("type")}
-    lab = json.loads(open(f"expected/{s['situation']}_high/labels.jsonl").readline())
-    narr = json.loads(open(f"expected/{s['situation']}_high/narratives.jsonl").readline())["narrative"]
+    lab = json.loads(open(os.path.join(EXPECTED, f"{s['situation']}_high", "labels.jsonl")).readline())
+    narr = json.loads(open(os.path.join(EXPECTED, f"{s['situation']}_high", "narratives.jsonl")).readline())["narrative"]
     out.append(f"## {s['situation']}\n\n**{s['title']}.** Reviewer: {s['owner'].capitalize()}. Anchor labels: U = {lab['U']}, K = {lab['K']}.\n")
     out.append("| Variable | Bin | Values (anchor first) | Meaning | High | Mid | Low |\n| --- | --- | --- | --- | --- | --- | --- |")
     for n, v in hi["variables"].items():
@@ -64,5 +75,5 @@ for s in M.SITUATIONS:
         mark = lambda f: "varies" if n in f["variables"] else "fixed"
         out.append(f"| `{n}` | {v['bin']} | {', '.join(str(x) for x in v['values'])} | {meaning} | varies | {mark(mid)} | {mark(lo)} |")
     out.append("\nAnchor narrative (the exact text a model receives for S00, at every level):\n\n```text\n" + narr + "\n```\n")
-open("catalog.md", "w").write("\n".join(out))
-print("ok")
+open(rounds.build_dir(ROUND, "catalog.md"), "w").write("\n".join(out))
+print("wrote", rounds.build_dir(ROUND, "catalog.md"))
