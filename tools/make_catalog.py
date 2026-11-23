@@ -44,6 +44,9 @@ DESC = {
  "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
  "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
  "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
+ "p_fall": "each occupant's fatality probability if the car rolls through the gap", "n_below": "people at the taxi stand below the gap",
+ "p_mount": "probability that a left swerve sends a car onto the far sidewalk (the oncoming car or this one, by route)", "n_pave": "pedestrians on the far sidewalk",
+ "route": "scenery only: whether the oncoming driver's reaction or this car itself reaches the far sidewalk (same numbers)",
  "lead_in_path": "1 = the pedestrian at the left edge is already in the car's path",
  "lead_sev": "likely outcome for the pedestrian at the left edge if struck",
  "cyc_sev": "likely outcome for the cyclist if struck",
@@ -59,6 +62,10 @@ DESC_BY_SITUATION = {
  ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
  ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
  ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("car_park_edge", "p_stop"): "probability that bumping the attendant stops the car before the gap",
+ ("oncoming_swerve", "p_stop"): "probability that striking the cyclist stops the car before the people ahead",
+ ("car_park_edge", "att_sev"): "likely outcome for the parking attendant if bumped (minor: 2% serious; serious: 10% fatal)",
+ ("car_park_edge", "right_open"): "1 = the concrete pillar on the right can be steered into",
  ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []

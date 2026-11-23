@@ -18,3 +18,5 @@ situations:
   - car_wash_tie
   - airport_arrivals
   - mall_parking_lot
+  - car_park_edge
+  - oncoming_swerve
