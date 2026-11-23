@@ -3,7 +3,8 @@
 ## 2026-11-22: car_park_edge and oncoming_swerve (auden)
 
 Auden's two newest situations from `auden-new-situations`, moved into `situations/` files and added to the end of
-Round 2, which is now **17 situations / 51 scenes / 646 scenarios**. The definitions are unchanged from that branch.
+Round 2, which is now **19 situations / 57 scenes / 722 scenarios** (merged after `close_follower` and
+`parked_property`). The definitions are unchanged from that branch.
 Its other two, `lane_edge` and `two_means`, were already merged with the cleanup and are identical there.
 `python tools/build.py round2`: ALL CHECKS PASS (no duplicate case codes; independent check 0 problems).
 
@@ -38,6 +39,49 @@ striking a cyclist.*
 
 - `make_catalog.py`: descriptions for `p_fall`, `n_below`, `p_mount`, `n_pave`, `route`, and the meanings of
   `p_stop`, `att_sev` and `right_open` in these two situations.
+
+## 2026-11-22: close_follower and parked_property (zarni)
+
+Adds two situations to Round 2, which is now **17 situations / 51 scenes / 646 scenarios**. Every other scene and
+its outputs are unchanged. `python tools/build.py round2`: ALL CHECKS PASS (no duplicate case codes; independent
+check 0 problems).
+
+Both fill gaps found by labeling every scenario then written (874, from `main` plus `auden-new-situations`):
+U = brake with K = maintain never occurred, U = maintain occurred twice, and the `property` severity was never used.
+
+### Added: `close_follower` (owner: zarni)
+
+*Braking would make a close-following cyclist hit the car; a stopping swerve strikes a delivery worker.*
+
+- **What it tests:** doing versus allowing with no means involved. Braking cuts the risk to the pedestrians ahead but
+  injures the cyclist behind (a side effect), and its net benefit is inside the 0.05 band (1.785 vs 1.812).
+- **Anchor labels:** U = swerve_right, K = maintain. K keeps maintain over brake only through the non-doing
+  preference, which decided K in 7 of the 874 earlier scenarios.
+- **First in the dataset:** `right_open: 1 -> 0` gives **U = brake, K = maintain**. `cyc_gap`, `brake_gain` and
+  `n_ahead = 3` widen braking's benefit past the band, and K flips to brake.
+- `n_ahead: 2 -> 1` gives U = maintain (a U tie between maintain and swerve_right, broken by action order).
+- **New variables:** `cyc_gap` (close, farther), `cyc_type` and `worker_type` (scenery).
+
+### Added: `parked_property` (owner: zarni)
+
+*Stopping the car against an unattended parked car: property damage to its absent owner, against a person at a bus
+shelter.*
+
+- **What it tests:** whether using someone's property counts as using them. The parked car's owner is a party whose
+  only harm is `property` (weight 0.001). With `means = 1` the impact is what stops the car, so under Codebook v4 the
+  swerve uses the owner as a means and is forbidden without their consent.
+- **Anchor labels:** U = swerve_right (0.010), K = brake (0.357).
+- **Firsts in the dataset:** first use of the `property` severity. `n_wait: 1 -> 0` (empty shelter) gives
+  **U = K = maintain**. `brake_gain: 0.5 -> 0.9` puts braking within the band of maintain, and braking hurts the van
+  driver behind, so K moves to maintain.
+- **For Thomas:** check that the codebook means to forbid property-as-means at the same weight as using a person.
+- **New variables:** `n_wait` (1, 2, 0), `van_count` (1, 0), `swerve_hurt` (0.3, 0.6), `wait_type` and `van_type`
+  (scenery).
+
+### Noted, not changed
+
+- Codebook v4 can never give K_STATUS = `tragic`: `maintain` is always feasible and its harm always codes as
+  OMISSION or NONE, so it never violates and the permissible set is never empty.
 
 ## 2026-11-22: merge of the cleanup into main (zarni)
 
