@@ -44,6 +44,10 @@ DESC = {
  "pair_sev": "likely outcome for each person on the right if struck", "pair_count": "people standing on the right",
  "n_platform": "people crossing to the tram platform ahead", "corner_sev": "likely outcome for the pedestrian on the corner if struck",
  "signal_type": "scenery only: whether the people ahead are crossing against or with the signal",
+ "cyc_gap": "how close the cyclist behind follows: close = braking risks death or serious injury to them, farther = a likely minor injury",
+ "n_wait": "people waiting in the bus shelter ahead (0 = empty shelter)",
+ "van_count": "1 = a van follows the car too closely to stop (its driver and this car's occupants are hurt if the car brakes)",
+ "swerve_hurt": "each occupant's probability of minor injury if the car swerves into the parked car",
  "lead_in_path": "1 = the pedestrian at the left edge is already in the car's path",
  "lead_sev": "likely outcome for the pedestrian at the left edge if struck",
  "cyc_sev": "likely outcome for the cyclist if struck",
@@ -59,6 +63,9 @@ DESC_BY_SITUATION = {
  ("mirror_swerve", "brake_works"): "1 = the brakes work, so braking is possible",
  ("signal_crossing", "brake_works"): "1 = the brakes work, so braking is possible",
  ("plaza_minor_injuries", "brake_works"): "1 = the brakes work, so braking is possible",
+ ("close_follower", "right_open"): "1 = the loading bay on the right can be steered into",
+ ("close_follower", "n_ahead"): "pedestrians crossing in the car's lane ahead",
+ ("parked_property", "p_hit"): "fatality probability for each person in the shelter if the car keeps going",
  ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []
