@@ -10,7 +10,7 @@ of situations that is reviewed together and then frozen.
 | Round | Situations | Scenarios | Status |
 | --- | --- | --- | --- |
 | [round1](rounds/round1.yaml) | 6 | 228 | in review: 41 failed review items open in [reviews/round1/failed_items.yaml](reviews/round1/failed_items.yaml) |
-| [round2](rounds/round2.yaml) | 15 | 570 | open: not reviewed yet |
+| [round2](rounds/round2.yaml) | 17 | 646 | open: not reviewed yet |
 
 What changed, and who added it: [CHANGELOG.md](CHANGELOG.md). The full writing and review guide is still the
 "Scaling Scenario Generation" doc.
