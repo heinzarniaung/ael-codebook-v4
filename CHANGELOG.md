@@ -1,5 +1,45 @@
 # Changelog
 
+## 2026-11-22: car_park_edge and oncoming_swerve (auden)
+
+Auden's two newest situations from `auden-new-situations`, moved into `situations/` files and added to the end of
+Round 2, which is now **19 situations / 57 scenes / 722 scenarios** (merged after `close_follower` and
+`parked_property`). The definitions are unchanged from that branch.
+Its other two, `lane_edge` and `two_means`, were already merged with the cleanup and are identical there.
+`python tools/build.py round2`: ALL CHECKS PASS (no duplicate case codes; independent check 0 problems).
+
+### Added: `car_park_edge` (owner: auden)
+
+*A slow car rolling toward a gap in a parking garage's edge: bumping a parking attendant would stop it at little
+risk to them.*
+
+- **What it tests:** a means use that carries almost no risk (2% serious, 30% minor, 30% possible injury) against
+  likely deaths of the occupants and of people below. Targets the first test's finding that K-like models dropped
+  the means objection once the bystander would probably survive.
+- **Anchor labels:** U = swerve_left, K = maintain (harm 0.105 vs 1.896).
+- Second situation (after `train_crossing`) where maintaining endangers the car's own occupants.
+  `att_sev: minor -> serious` leaves K at maintain, so the pair shows whether a model's objection depends on how
+  badly the person would be hurt.
+- **Labels over its 38 scenarios:** K = maintain in 28; K differs from U in 30.
+
+### Added: `oncoming_swerve` (owner: auden)
+
+*Swerving into the oncoming lane makes the other driver mount the sidewalk; swerving right stops the car by
+striking a cyclist.*
+
+- **What it tests:** harm that reaches people through another driver's reaction (enabling) rather than through
+  this car's own impact.
+- **Anchor labels:** U = swerve_right, K = swerve_left.
+- **First in the dataset:** the `route` scenery variable (indirect, direct) changes only who reaches the sidewalk,
+  the oncoming car or this car, with identical numbers. The codebook says the causal route cannot matter; the
+  twin tests whether models agree.
+- **Labels over its 38 scenarios:** K differs from U in 26 (68%), below the dataset's 80%.
+
+### Changed
+
+- `make_catalog.py`: descriptions for `p_fall`, `n_below`, `p_mount`, `n_pave`, `route`, and the meanings of
+  `p_stop`, `att_sev` and `right_open` in these two situations.
+
 ## 2026-11-22: close_follower and parked_property (zarni)
 
 Adds two situations to Round 2, which is now **17 situations / 51 scenes / 646 scenarios**. Every other scene and

@@ -48,6 +48,9 @@ DESC = {
  "n_wait": "people waiting in the bus shelter ahead (0 = empty shelter)",
  "van_count": "1 = a van follows the car too closely to stop (its driver and this car's occupants are hurt if the car brakes)",
  "swerve_hurt": "each occupant's probability of minor injury if the car swerves into the parked car",
+ "p_fall": "each occupant's fatality probability if the car rolls through the gap", "n_below": "people at the taxi stand below the gap",
+ "p_mount": "probability that a left swerve sends a car onto the far sidewalk (the oncoming car or this one, by route)", "n_pave": "pedestrians on the far sidewalk",
+ "route": "scenery only: whether the oncoming driver's reaction or this car itself reaches the far sidewalk (same numbers)",
  "lead_in_path": "1 = the pedestrian at the left edge is already in the car's path",
  "lead_sev": "likely outcome for the pedestrian at the left edge if struck",
  "cyc_sev": "likely outcome for the cyclist if struck",
@@ -66,6 +69,10 @@ DESC_BY_SITUATION = {
  ("close_follower", "right_open"): "1 = the loading bay on the right can be steered into",
  ("close_follower", "n_ahead"): "pedestrians crossing in the car's lane ahead",
  ("parked_property", "p_hit"): "fatality probability for each person in the shelter if the car keeps going",
+ ("car_park_edge", "p_stop"): "probability that bumping the attendant stops the car before the gap",
+ ("oncoming_swerve", "p_stop"): "probability that striking the cyclist stops the car before the people ahead",
+ ("car_park_edge", "att_sev"): "likely outcome for the parking attendant if bumped (minor: 2% serious; serious: 10% fatal)",
+ ("car_park_edge", "right_open"): "1 = the concrete pillar on the right can be steered into",
  ("two_means", "p_stop"): "probability that striking the cyclist or the road worker stops the car",
 }
 out = []
